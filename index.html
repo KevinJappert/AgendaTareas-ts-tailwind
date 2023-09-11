@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Gestion-De-Tareas-Web-Vite-Ts</title>
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+
+  <link rel="stylesheet" href="src/styles.css">
+  <link rel="stylesheet" href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" />
+
+</head>
+
+<style>
+  html {
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+
+  body {
+    background-color: black;
+  }
+</style>
+
+<body class="leading-normal tracking-normal text-indigo-400 m-6 bg-cover bg-fixed">
+
+  <div class="h-full">
+
+    <!--Encabezado-->
+    <div class="w-full container mx-auto">
+      <div class="w-full flex items-center justify-between">
+        <a class="flex items-center text-indigo-400 no-underline hover:no-underline font-bold text-2xl lg:text-4xl"
+          href="#">
+          Kevin<span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-pink-500 to-purple-500">
+            Jappert</span>
+        </a>
+
+        <div class="flex w-1/2 justify-end content-center">
+          <a href="https://www.linkedin.com/in/kevin-jappert-551a7a244/">
+            <img src="./public/img/linkedin (1).png" alt="linkedinKevinJappert" class="w-8 h-8 mt-3 mr-2">
+          </a>
+
+          <a href="https://github.com/KevinJappert">
+            <img src="./public/img/github.png" alt="gitKevinJappert" class="w-8 h-8 mt-3">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!--Cuerpo-->
+    <div class="container pt-24 md:pt-36 mx-auto flex flex-wrap flex-col md:flex-row items-center">
+      <!--Columna Izquierda-->
+      <div class="flex flex-col w-full xl:w-2/5 justify-center lg:items-start overflow-y-hidden">
+        <h1 class="my-4 text-3xl md:text-5xl text-white opacity-75 font-bold leading-tight text-center md:text-left">
+          Web
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-pink-500 to-purple-500">
+            Gestion De Tareas
+          </span>
+
+        </h1>
+        <p class="leading-normal text-base md:text-2xl mb-8 text-center md:text-left">
+          Ingrese sus tareas
+        </p>
+
+        <form class="bg-gray-900 opacity-75 w-full shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4">
+          <div class="mb-4">
+
+            <input
+              class="shadow appearance-none border rounded w-full p-3 leading-tight focus:ring transform transition hover:scale-105 duration-300 ease-in-out"
+              id="tarea" type="text" placeholder="Su tarea" />
+          </div>
+          <div>
+            <p id="mensaje"></p>
+            <div id="lista-tarea">
+              Tareas Pendientes:
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-4">
+            <button id="boton-asignar"
+              class="bg-gradient-to-r from-purple-800 to-green-500 hover:from-pink-500 hover:to-green-500 text-white font-bold py-2 px-4 rounded focus:ring transform transition hover:scale-105 duration-300 ease-in-out"
+              type="button">
+              Asignar
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!--Right Col-->
+      <div class="w-full xl:w-3/5 p-12 overflow-hidden">
+        <!-- <img class="mx-auto w-full md:w-4/5 transform -rotate-6 transition hover:scale-105 duration-700 ease-in-out hover:rotate-6" src="macbook.svg" /> -->
+      </div>
+
+
+      <div class="mx-auto md:pt-16">
+        <p class="text-blue-400 font-bold pb-8 lg:pb-6 text-center">
+
+
+
+        </p>
+        <div class="flex w-full justify-center md:justify-start pb-24 lg:pb-0 fade-in">
+
+        </div>
+      </div>
+
+      <!--Footer-->
+      <div class="w-full pt-16 pb-6 text-sm text-center md:text-left fade-in">
+        <a class="text-gray-500 no-underline hover:no-underline" href="#">&copy; App 2023</a>
+        - Template by
+        <a class="text-gray-500 no-underline hover:no-underline" href="https://github.com/KevinJappert">GitHub
+          KevinJappert</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

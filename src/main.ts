@@ -1,3 +1,6 @@
+import { v4 as uuidv4 } from 'uuid'; // se utiliza para generar y asociar UUIDs únicos con cada tarea que se agrega a tu lista, lo que facilita la identificación y el seguimiento de tareas específicas en tu aplicación.
+import { eliminarTareaLocalStorage, cargarTareasDesdeLocalStorage, guardarTareaLocalStorage } from "./Funciones/funciones";
+
 // Obtener elementos del DOM
 const btnAsignar = document.getElementById("boton-asignar");
 const tareaInput = document.getElementById("tarea") as HTMLInputElement;
@@ -7,53 +10,15 @@ const listaTareaResultado = document.getElementById("lista-tarea");
 // Variable para controlar si se ha realizado una edición
 let seRealizoEdicion = false;
 
-// Cargar tareas desde el almacenamiento local al iniciar la aplicación
-const tareasGuardadas = cargarTareasDesdeLocalStorage();
-
-// Llenar la lista de tareas con las tareas guardadas
-tareasGuardadas.forEach((tareaGuardada) => {
-    agregarTareaALista(tareaGuardada, listaTareaResultado!);
-});
-
-// Agregar evento de clic al botón "Asignar"
-btnAsignar?.addEventListener('click', () => {
-    if (tareaInput && !seRealizoEdicion && mensajeParrafo && listaTareaResultado) {
-        const tareaValor = tareaInput.value ? tareaInput.value.trim() : '';
-
-        // Mostrar un mensaje de error si la tarea es inválida
-        mensajeParrafo.textContent = "Por favor, ingrese una tarea válida.";
-
-        if (tareaValor === "" || !isNaN(Number(tareaValor))) {
-            // Limpiar el mensaje de error después de 2 segundos
-            setTimeout(() => {
-                mensajeParrafo.textContent = "";
-            }, 2000);
-        } else {
-            mensajeParrafo.textContent = "";
-            console.log(tareaValor);
-
-            // Verificar si la tarea ya existe en la lista antes de agregarla
-            const tareasEnLista = Array.from(listaTareaResultado!.children);
-            const tareaExistente = tareasEnLista.some((tarea) => tarea.textContent === tareaValor);
-
-            if (!tareaExistente) {
-                agregarTareaALista(tareaValor, listaTareaResultado);
-                seRealizoEdicion = false;
-                tareaInput.value = "";
-                guardarTareaLocalStorage(tareaValor);
-            }
-        }
-    }
-});
-
 // Función para agregar una tarea a la lista
 function agregarTareaALista(tareaInput: string, listaTareaResultado: HTMLElement) {
     tareaInput = tareaInput.trim();
 
     const tareasEnLista = Array.from(listaTareaResultado!.children);
 
-    // Generar un identificador único para cada tarea
-    const tareaId = `tarea-${Date.now()}`;
+    // Generar un identificador único para cada tarea usando uuidv4()
+    const tareaId = uuidv4();
+
     const tareaExistente = tareasEnLista.find((tarea) => tarea.getAttribute('data-id') === tareaId);
 
     if (!tareaExistente && tareaInput !== '') {
@@ -138,35 +103,49 @@ function agregarTareaALista(tareaInput: string, listaTareaResultado: HTMLElement
 
         listaTareaResultado.appendChild(nuevaTarea);
     }
-    guardarTareaLocalStorage(tareaInput);
 }
 
-// Función para guardar una tarea en el almacenamiento local
-function guardarTareaLocalStorage(tarea: string) {
-    let tareas: string[] = cargarTareasDesdeLocalStorage();
-
-    if (!tareas.includes(tarea)) {
-        tareas.push(tarea);
-        localStorage.setItem('tareas', JSON.stringify(tareas));
-    }
-}
-
-// Función para cargar tareas desde el almacenamiento local
-function cargarTareasDesdeLocalStorage(): string[] {
-    const tareasString = localStorage.getItem("tareas");
-    if (tareasString) {
-        return JSON.parse(tareasString);
-    } else {
-        return [];
-    }
-}
-
-// Función para eliminar una tarea del almacenamiento local
-function eliminarTareaLocalStorage(tarea: string) {
+// Evento DOMContentLoaded para cargar tareas desde el LocalStorage
+document.addEventListener('DOMContentLoaded', () => {
     const tareasGuardadas = cargarTareasDesdeLocalStorage();
-    const nuevasTareas = tareasGuardadas.filter((t) => t !== tarea);
-    localStorage.setItem('tareas', JSON.stringify(nuevasTareas));
-}
+    tareasGuardadas.forEach((tareaGuardada) => {
+        agregarTareaALista(tareaGuardada, listaTareaResultado!);
+    });
+});
+
+// Agregar evento de clic al botón "Asignar"
+btnAsignar?.addEventListener('click', () => {
+    if (tareaInput && !seRealizoEdicion && mensajeParrafo && listaTareaResultado) {
+        const tareaValor = tareaInput.value ? tareaInput.value.trim() : '';
+
+        // Mostrar un mensaje de error si la tarea es inválida
+        mensajeParrafo.textContent = "Por favor, ingrese una tarea válida.";
+
+        if (tareaValor === "" || !isNaN(Number(tareaValor))) {
+            // Limpiar el mensaje de error después de 2 segundos
+            setTimeout(() => {
+                mensajeParrafo.textContent = "";
+            }, 2000);
+        } else {
+            mensajeParrafo.textContent = "";
+            console.log(tareaValor);
+
+            // Verificar si la tarea ya existe en la lista antes de agregarla
+            const tareasEnLista = Array.from(listaTareaResultado.children);
+            const tareaExistente = tareasEnLista.some((tarea) => tarea.textContent === tareaValor);
+
+            if (!tareaExistente) {
+                agregarTareaALista(tareaValor, listaTareaResultado);
+                seRealizoEdicion = false;
+                tareaInput.value = "";
+                guardarTareaLocalStorage(tareaValor);
+            }
+        }
+    }
+});
 
 console.log(localStorage);
 console.log(localStorage.getItem('tareas'));
+
+// Proximamente: agregar funcionalidad para hora de la tarea, tiempo para hacerla,
+// marcar como completada, y eliminar tareas.

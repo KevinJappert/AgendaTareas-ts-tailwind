@@ -72,6 +72,12 @@ function agregarTareaALista(tareaInput: string, tareaId: string, listaTareaResul
         inputEditar.type = 'text';
         inputEditar.className = 'hidden';
 
+        inputEditar.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                actualizarTextoTarea(inputEditar, tareaTexto, tareaId);
+            }
+        });
+
         imgEditar.addEventListener('click', () => {
             console.log('Haz hecho clic en el icono de editar');
             habilitarEdicionTarea(inputEditar, tareaTexto);
@@ -91,11 +97,25 @@ function agregarTareaALista(tareaInput: string, tareaId: string, listaTareaResul
         nuevaTarea.appendChild(inputEditar);
 
         listaTareaResultado.appendChild(nuevaTarea);
+
+
     }
 }
 
 // Agregar evento de clic al botón "Asignar"
 btnAsignar?.addEventListener('click', () => {
+    agregarTarea();
+});
+
+// Agregar evento de tecla "Enter" para el campo de entrada de tareas
+tareaInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        agregarTarea();
+    }
+});
+
+// Agregar evento de clic al botón "Asignar"
+function agregarTarea() {
     if (tareaInput && !seRealizoEdicion && mensajeParrafo && listaTareaResultado) {
         const tareaValor = tareaInput.value ? tareaInput.value.trim() : '';
 
@@ -131,7 +151,7 @@ btnAsignar?.addEventListener('click', () => {
             }
         }
     }
-});
+};
 
 
 

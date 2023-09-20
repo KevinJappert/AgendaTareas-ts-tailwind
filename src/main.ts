@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from 'uuid'; // se utiliza para generar y asociar UUIDs únicos con cada tarea que se agrega a tu lista, lo que facilita la identificación y el seguimiento de tareas específicas en tu aplicación.
-import { eliminarTareaLocalStorage, cargarTareasDesdeLocalStorage, guardarTareaLocalStorage } from "./Funciones/funciones";
+import { v4 as uuidv4 } from 'uuid';
+import { eliminarTareaListaYLocalStorage, cargarTareasDesdeLocalStorage, guardarTareaLocalStorage, habilitarEdicionTarea, Tarea, actualizarTextoTarea, seRealizoEdicion, actualizarSeRealizoEdicion } from "./Funciones/funciones";
 
 // Obtener elementos del DOM
 const btnAsignar = document.getElementById("boton-asignar");
@@ -7,17 +7,20 @@ const tareaInput = document.getElementById("tarea") as HTMLInputElement;
 const mensajeParrafo = document.getElementById("mensaje");
 const listaTareaResultado = document.getElementById("lista-tarea");
 
-// Variable para controlar si se ha realizado una edición
-let seRealizoEdicion = false;
+// Evento DOMContentLoaded para cargar tareas desde el LocalStorage
+document.addEventListener('DOMContentLoaded', () => {
+    const tareasGuardadas = cargarTareasDesdeLocalStorage();
+    tareasGuardadas.forEach((tareaGuardada) => {
+        agregarTareaALista(tareaGuardada.texto, tareaGuardada.id, listaTareaResultado!);
+    });
+});
+
 
 // Función para agregar una tarea a la lista
-function agregarTareaALista(tareaInput: string, listaTareaResultado: HTMLElement) {
+function agregarTareaALista(tareaInput: string, tareaId: string, listaTareaResultado: HTMLElement) {
     tareaInput = tareaInput.trim();
 
     const tareasEnLista = Array.from(listaTareaResultado!.children);
-
-    // Generar un identificador único para cada tarea usando uuidv4()
-    const tareaId = uuidv4();
 
     const tareaExistente = tareasEnLista.find((tarea) => tarea.getAttribute('data-id') === tareaId);
 
@@ -57,13 +60,7 @@ function agregarTareaALista(tareaInput: string, listaTareaResultado: HTMLElement
 
         imgEliminar.addEventListener('click', () => {
             console.log('Haz hecho clic en el icono de eliminar');
-
-            const tareaPadre = imgEliminar.parentElement?.parentElement;
-            if (tareaPadre) {
-                tareaPadre.remove();
-                // Remover la tarea del almacenamiento local
-                eliminarTareaLocalStorage(tareaInput);
-            }
+            eliminarTareaListaYLocalStorage(tareaId);
         });
 
         const imgEditar = document.createElement('img');
@@ -77,20 +74,12 @@ function agregarTareaALista(tareaInput: string, listaTareaResultado: HTMLElement
 
         imgEditar.addEventListener('click', () => {
             console.log('Haz hecho clic en el icono de editar');
-
-            inputEditar.style.display = 'inline-block';
-            tareaTexto.style.display = 'none';
-
-            inputEditar.value = tareaTexto.textContent || '';
-            inputEditar.focus();
+            habilitarEdicionTarea(inputEditar, tareaTexto);
         });
 
+        // Edición de una tarea
         inputEditar.addEventListener('blur', () => {
-            tareaTexto.textContent = inputEditar.value;
-            tareaTexto.style.display = 'inline-block';
-            inputEditar.style.display = 'none';
-
-            seRealizoEdicion = true;
+            actualizarTextoTarea(inputEditar, tareaTexto, tareaId);
         });
 
         accionesContainer.appendChild(inputChequeo);
@@ -104,14 +93,6 @@ function agregarTareaALista(tareaInput: string, listaTareaResultado: HTMLElement
         listaTareaResultado.appendChild(nuevaTarea);
     }
 }
-
-// Evento DOMContentLoaded para cargar tareas desde el LocalStorage
-document.addEventListener('DOMContentLoaded', () => {
-    const tareasGuardadas = cargarTareasDesdeLocalStorage();
-    tareasGuardadas.forEach((tareaGuardada) => {
-        agregarTareaALista(tareaGuardada, listaTareaResultado!);
-    });
-});
 
 // Agregar evento de clic al botón "Asignar"
 btnAsignar?.addEventListener('click', () => {
@@ -135,17 +116,26 @@ btnAsignar?.addEventListener('click', () => {
             const tareaExistente = tareasEnLista.some((tarea) => tarea.textContent === tareaValor);
 
             if (!tareaExistente) {
-                agregarTareaALista(tareaValor, listaTareaResultado);
-                seRealizoEdicion = false;
+                // Crear un objeto Tarea con el texto
+                const nuevaTarea: Tarea = {
+                    id: uuidv4(),
+                    texto: tareaValor,
+                };
+
+                agregarTareaALista(tareaValor, nuevaTarea.id, listaTareaResultado);
+                actualizarSeRealizoEdicion(false);
                 tareaInput.value = "";
-                guardarTareaLocalStorage(tareaValor);
+
+                // Llamar a guardarTareaLocalStorage con el objeto Tarea
+                guardarTareaLocalStorage(nuevaTarea);
             }
         }
     }
 });
 
+
+
+// Resto de tu código...
+
 console.log(localStorage);
 console.log(localStorage.getItem('tareas'));
-
-// Proximamente: agregar funcionalidad para hora de la tarea, tiempo para hacerla,
-// marcar como completada, y eliminar tareas.

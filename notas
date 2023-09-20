@@ -1,0 +1,6 @@
+Date.now(). Esto, en teoría, debería generar IDs únicos basados en la marca de tiempo actual.
+Sin embargo, si se asignan tareas rápidamente en sucesión, es posible que dos tareas se creen en el mismo milisegundo,
+lo que resultaría en IDs idénticos
+Para evitar este problema, se reemplazó la generación de IDs basados en la fecha y la hora con UUIDs (Universally Unique Identifiers)
+ utilizando la biblioteca uuid. Los UUIDs son identificadores globalmente únicos garantizados y resuelven el problema de manera efectiva
+  al proporcionar identificadores verdaderamente únicos para cada tarea, 

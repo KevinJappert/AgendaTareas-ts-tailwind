@@ -3,16 +3,18 @@ import { listaTareaResultado, tareaInput } from '../main';
 export interface Tarea {
     id: string;
     texto: string;
+    fechaVencimiento?: string;
 }
 
 // Variable para controlar si se ha realizado una edición
 export let seRealizoEdicion: boolean = false;
 
-const mensajeParrafo = document.getElementById("mensaje");
+export const mensajeParrafo = document.getElementById("mensaje") as HTMLParagraphElement;
+export const fechaVencimientoInput = document.getElementById('fecha-vencimiento') as HTMLInputElement;
 
 
 // Función para agregar una tarea a la lista
-export function agregarTareaALista(tareaInput: string, tareaId: string, listaTareaResultado: HTMLElement) {
+export function agregarTareaALista(tareaInput: string, tareaId: string, listaTareaResultado: HTMLElement, fechaVencimiento?: Date) {
     tareaInput = tareaInput.trim();
 
     const tareasEnLista = Array.from(listaTareaResultado!.children);
@@ -22,6 +24,7 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
     if (!tareaExistente && tareaInput !== '') {
         const nuevaTarea = document.createElement("li");
         nuevaTarea.classList.add("tareaAsignada");
+        nuevaTarea.className = 'flex justify-between my-2'
 
         // Asignar el identificador único a la tarea
         nuevaTarea.setAttribute("data-id", tareaId);
@@ -54,7 +57,7 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
         const imgEliminar = document.createElement('img');
         imgEliminar.src = './public/img/eliminar.png';
         imgEliminar.alt = 'Eliminar';
-        imgEliminar.className = 'accion-eliminar w-8 h-8 mt-3 mr-2 cursor-pointer';
+        imgEliminar.className = 'accion-eliminar w-8 h-8 mt-3 mr-2 cursor-pointer ';
 
         imgEliminar.addEventListener('click', () => {
             console.log('Haz hecho clic en el icono de eliminar');
@@ -64,7 +67,7 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
         const imgEditar = document.createElement('img');
         imgEditar.src = './public/img/boligrafo.png';
         imgEditar.alt = 'Editar';
-        imgEditar.className = 'accion-editar w-8 h-8 mt-3 cursor-pointer';
+        imgEditar.className = 'accion-editar w-8 h-8 mt-3 cursor-pointer ';
 
         const inputEditar = document.createElement('input');
         inputEditar.type = 'text';
@@ -94,6 +97,12 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
         nuevaTarea.appendChild(accionesContainer);
         nuevaTarea.appendChild(inputEditar);
 
+        if (fechaVencimiento) {
+            const fechaVencimientoElement = document.createElement('div')
+            fechaVencimientoElement.textContent = `Fecha de vencimiento: ${fechaVencimiento.toLocaleDateString()}`;
+            listaTareaResultado.appendChild(fechaVencimientoElement);
+        }
+
         listaTareaResultado.appendChild(nuevaTarea);
 
         // Verifica si el estado del checkbox está guardado en el almacenamiento local
@@ -111,6 +120,8 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
 export function agregarTarea() {
     if (tareaInput && !seRealizoEdicion && mensajeParrafo && listaTareaResultado) {
         const tareaValor = tareaInput.value ? tareaInput.value.trim() : '';
+        const fechaVencimientoTexto = fechaVencimientoInput.value;
+
 
         // Mostrar un mensaje de error si la tarea es inválida
         mensajeParrafo.textContent = "Por favor, ingrese una tarea válida.";
@@ -133,11 +144,14 @@ export function agregarTarea() {
                 const nuevaTarea: Tarea = {
                     id: uuidv4(),
                     texto: tareaValor,
+                    fechaVencimiento: fechaVencimientoTexto.trim() !== "" ? new Date(fechaVencimientoTexto).toISOString() : undefined,
                 };
 
-                agregarTareaALista(tareaValor, nuevaTarea.id, listaTareaResultado);
+                agregarTareaALista(tareaValor, nuevaTarea.id, listaTareaResultado, nuevaTarea.fechaVencimiento ? new Date(nuevaTarea.fechaVencimiento) : undefined);
                 actualizarSeRealizoEdicion(false);
                 tareaInput.value = "";
+                fechaVencimientoInput.value = '';
+
 
                 // Llamar a guardarTareaLocalStorage con el objeto Tarea
                 guardarTareaLocalStorage(nuevaTarea);
@@ -146,13 +160,40 @@ export function agregarTarea() {
     }
 };
 
-// Función para guardar una tarea en el almacenamiento local
+// Función para eliminar la fecha de vencimiento de una tarea en el almacenamiento local
+export function eliminarFechaVencimientoLocalStorage(tareaId: string) {
+    console.log('Eliminando fecha de vencimiento para tarea con ID:', tareaId);
+
+    const fechasVencimientoGuardadas = cargarFechasVencimientoDesdeLocalStorage();
+    console.log('Fechas de vencimiento antes de la eliminación:', fechasVencimientoGuardadas);
+
+    delete fechasVencimientoGuardadas[tareaId];
+    console.log('Fechas de vencimiento después de la eliminación:', fechasVencimientoGuardadas);
+
+    localStorage.setItem('fechasVencimiento', JSON.stringify(fechasVencimientoGuardadas));
+    console.log('Fecha de vencimiento eliminada del almacenamiento local.');
+}
+
+// Función para cargar las fechas de vencimiento desde el almacenamiento local
+export function cargarFechasVencimientoDesdeLocalStorage(): { [key: string]: string } {
+    const fechasVencimientoString = localStorage.getItem('fechasVencimiento');
+    return fechasVencimientoString ? JSON.parse(fechasVencimientoString) : {};
+}
+
+// Modifica la función guardarTareaLocalStorage para incluir la fecha de vencimiento
 export function guardarTareaLocalStorage(tarea: Tarea) {
     let tareas: Tarea[] = cargarTareasDesdeLocalStorage();
 
     if (!tareas.some((t) => t.texto === tarea.texto)) {
         tareas.push(tarea);
         localStorage.setItem('tareas', JSON.stringify(tareas));
+
+        // Verifica si hay fecha de vencimiento y guárdala en el LS
+        if (tarea.fechaVencimiento) {
+            const fechasVencimiento = cargarFechasVencimientoDesdeLocalStorage();
+            fechasVencimiento[tarea.id] = tarea.fechaVencimiento;
+            localStorage.setItem('fechasVencimiento', JSON.stringify(fechasVencimiento));
+        }
     }
 }
 
@@ -197,6 +238,9 @@ export function eliminarTareaListaYLocalStorage(tareaId: string) {
     if (tareaPadre) {
         tareaPadre.remove();
         eliminarTareaLocalStorage(tareaId);
+
+        // También elimina la fecha de vencimiento del Local Storage y del documento
+        eliminarFechaVencimientoLocalStorage(tareaId);
     }
 }
 

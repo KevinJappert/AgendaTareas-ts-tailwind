@@ -4,3 +4,38 @@ lo que resultaría en IDs idénticos
 Para evitar este problema, se reemplazó la generación de IDs basados en la fecha y la hora con UUIDs (Universally Unique Identifiers)
  utilizando la biblioteca uuid. Los UUIDs son identificadores globalmente únicos garantizados y resuelven el problema de manera efectiva
   al proporcionar identificadores verdaderamente únicos para cada tarea, 
+
+
+  Categorización de tareas: Permite a los usuarios organizar tareas en categorías o etiquetas para una mejor gestión.
+
+Prioridades: Agrega la opción de establecer prioridades para las tareas (alta, media, baja) y ordenarlas en consecuencia.
+
+Fecha de vencimiento: Permite a los usuarios establecer fechas de vencimiento para las tareas y muestra recordatorios cuando se acerquen esas fechas.
+
+Notificaciones: Envía notificaciones a través del navegador o mensajes push a dispositivos móviles para recordar a los usuarios sobre las tareas pendientes.
+
+Lista compartida: Permite a los usuarios compartir listas de tareas con otros y colaborar en proyectos o tareas compartidas.
+
+Archivado: Agrega la capacidad de archivar tareas completadas o tareas que ya no son relevantes para mantener la lista de tareas actualizada y ordenada.
+
+Filtrado y búsqueda: Proporciona opciones para filtrar tareas por estado (completadas/no completadas), fecha de vencimiento, categoría, etc., y agrega una función de búsqueda.
+
+Arrastrar y soltar: Permite a los usuarios reorganizar tareas mediante la funcionalidad de arrastrar y soltar.
+
+Estadísticas y análisis: Proporciona gráficos y estadísticas sobre el rendimiento del usuario en la gestión de tareas.
+
+Sincronización: Permite a los usuarios sincronizar sus tareas en múltiples dispositivos.
+
+Personalización: Permite a los usuarios personalizar la apariencia de la aplicación, como temas de color o fondos de pantalla.
+
+Exportación e importación: Agrega la capacidad de exportar e importar listas de tareas para facilitar la copia de seguridad y la migración de datos.
+
+Integraciones: Integra la aplicación con otras herramientas populares como calendarios, aplicaciones de productividad o servicios de correo electrónico.
+
+Función de "Arranque rápido" o "Tarea rápida": Permite a los usuarios agregar rápidamente tareas desde cualquier parte de la aplicación sin tener que abrir una ventana nueva.
+
+Comentarios y notas: Permite a los usuarios adjuntar notas o comentarios a las tareas para proporcionar detalles adicionales.
+
+Recordatorios personalizados: Permite a los usuarios establecer recordatorios personalizados para tareas específicas.
+
+Modo oscuro: Ofrece una opción de modo oscuro para reducir la fatiga visual durante la noche.

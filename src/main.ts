@@ -4,12 +4,14 @@ import {
     restaurarEstadoCheckboxes,
     agregarTareaALista,
     agregarTarea,
+
 } from "./Funciones/funciones";
 
 // Obtener elementos del DOM
 const btnAsignar = document.getElementById("boton-asignar");
 export const tareaInput = document.getElementById("tarea") as HTMLInputElement;
 export const listaTareaResultado = document.getElementById("lista-tarea");
+
 
 // Evento DOMContentLoaded para cargar tareas desde el LocalStorage
 document.addEventListener('DOMContentLoaded', () => {

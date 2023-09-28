@@ -12,9 +12,8 @@ export let seRealizoEdicion: boolean = false;
 export const mensajeParrafo = document.getElementById("mensaje") as HTMLParagraphElement;
 export const fechaVencimientoInput = document.getElementById('fecha-vencimiento') as HTMLInputElement;
 
-
 // Función para agregar una tarea a la lista
-export function agregarTareaALista(tareaInput: string, tareaId: string, listaTareaResultado: HTMLElement, fechaVencimiento?: Date) {
+export function agregarTareaALista(tareaInput: string, tareaId: string, listaTareaResultado: HTMLElement, fechaVencimiento?: string) {
     tareaInput = tareaInput.trim();
 
     const tareasEnLista = Array.from(listaTareaResultado!.children);
@@ -24,7 +23,7 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
     if (!tareaExistente && tareaInput !== '') {
         const nuevaTarea = document.createElement("li");
         nuevaTarea.classList.add("tareaAsignada");
-        nuevaTarea.className = 'flex justify-between my-2'
+        nuevaTarea.className = 'flex justify-between my-2';
 
         // Asignar el identificador único a la tarea
         nuevaTarea.setAttribute("data-id", tareaId);
@@ -94,14 +93,19 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
         accionesContainer.appendChild(imgEditar);
 
         nuevaTarea.appendChild(tareaTexto);
+
+        // Mostrar la fecha de vencimiento en la tarea si existe
+        if (fechaVencimiento) {
+            const fechaVencimientoElement = document.createElement('span');
+            fechaVencimientoElement.textContent = `Fecha de vencimiento: ${new Date(fechaVencimiento).toLocaleDateString()}`;
+            nuevaTarea.appendChild(fechaVencimientoElement);
+
+            // Guardar la fecha de vencimiento en el almacenamiento local
+            guardarFechaVencimientoEnLocalStorage(tareaId, fechaVencimiento);
+        }
+
         nuevaTarea.appendChild(accionesContainer);
         nuevaTarea.appendChild(inputEditar);
-
-        if (fechaVencimiento) {
-            const fechaVencimientoElement = document.createElement('div')
-            fechaVencimientoElement.textContent = `Fecha de vencimiento: ${fechaVencimiento.toLocaleDateString()}`;
-            listaTareaResultado.appendChild(fechaVencimientoElement);
-        }
 
         listaTareaResultado.appendChild(nuevaTarea);
 
@@ -115,6 +119,7 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
         }
     }
 }
+
 
 // Agregar evento de clic al botón "Asignar"
 export function agregarTarea() {
@@ -146,13 +151,15 @@ export function agregarTarea() {
                     texto: tareaValor,
                     fechaVencimiento: fechaVencimientoTexto.trim() !== "" ? new Date(fechaVencimientoTexto).toISOString() : undefined,
                 };
-
-                agregarTareaALista(tareaValor, nuevaTarea.id, listaTareaResultado, nuevaTarea.fechaVencimiento ? new Date(nuevaTarea.fechaVencimiento) : undefined);
+            
+                // Convertir la fecha de vencimiento a cadena si no es undefined
+                const fechaVencimientoCadena = nuevaTarea.fechaVencimiento ? nuevaTarea.fechaVencimiento : undefined;
+            
+                agregarTareaALista(tareaValor, nuevaTarea.id, listaTareaResultado, fechaVencimientoCadena);
                 actualizarSeRealizoEdicion(false);
                 tareaInput.value = "";
-                fechaVencimientoInput.value = '';
-
-
+                fechaVencimientoInput.value = "";
+            
                 // Llamar a guardarTareaLocalStorage con el objeto Tarea
                 guardarTareaLocalStorage(nuevaTarea);
             }
@@ -170,7 +177,9 @@ export function eliminarFechaVencimientoLocalStorage(tareaId: string) {
     delete fechasVencimientoGuardadas[tareaId];
     console.log('Fechas de vencimiento después de la eliminación:', fechasVencimientoGuardadas);
 
+    // Actualiza el objeto de fechas de vencimiento en el Local Storage
     localStorage.setItem('fechasVencimiento', JSON.stringify(fechasVencimientoGuardadas));
+
     console.log('Fecha de vencimiento eliminada del almacenamiento local.');
 }
 
@@ -186,19 +195,19 @@ export function guardarTareaLocalStorage(tarea: Tarea) {
 
     if (!tareas.some((t) => t.texto === tarea.texto)) {
         tareas.push(tarea);
-        localStorage.setItem('tareas', JSON.stringify(tareas));
 
-        // Verifica si hay fecha de vencimiento y guárdala en el LS
+        // Verifica si hay fecha de vencimiento y guárdala en el LS junto con la tarea
         if (tarea.fechaVencimiento) {
-            const fechasVencimiento = cargarFechasVencimientoDesdeLocalStorage();
-            fechasVencimiento[tarea.id] = tarea.fechaVencimiento;
-            localStorage.setItem('fechasVencimiento', JSON.stringify(fechasVencimiento));
+            const tareasConFecha = cargarTareasDesdeLocalStorage();
+            tareasConFecha.push(tarea);
+            localStorage.setItem('tareas', JSON.stringify(tareasConFecha));
+        } else {
+            localStorage.setItem('tareas', JSON.stringify(tareas));
         }
     }
 }
 
-
-// Función para cargar tareas desde el almacenamiento local
+// Modifica la función cargarTareasDesdeLocalStorage para incluir tareas con fecha de vencimiento
 export function cargarTareasDesdeLocalStorage(): Tarea[] {
     const tareasString = localStorage.getItem('tareas');
     if (tareasString) {
@@ -208,6 +217,24 @@ export function cargarTareasDesdeLocalStorage(): Tarea[] {
     } else {
         return [];
     }
+}
+
+// Función para guardar la fecha de vencimiento en el almacenamiento local
+export function guardarFechaVencimientoEnLocalStorage(tareaId: string, fechaVencimiento: string) {
+    const fechasVencimientoGuardadas = cargarFechasVencimientoDesdeLocalStorage();
+
+    // Almacena la fecha de vencimiento como una cadena
+    fechasVencimientoGuardadas[tareaId] = fechaVencimiento;
+
+    localStorage.setItem('fechasVencimiento', JSON.stringify(fechasVencimientoGuardadas));
+    console.log('Fecha de vencimiento guardada en el almacenamiento local.');
+}
+
+// Función para obtener la fecha de vencimiento desde el almacenamiento local
+export function obtenerFechaVencimientoDesdeLocalStorage(tareaId: string): string | null {
+    const fechasVencimiento = cargarFechasVencimientoDesdeLocalStorage();
+    const fechaVencimientoString = fechasVencimiento[tareaId];
+    return fechaVencimientoString || null;
 }
 
 export function eliminarTareaLocalStorage(tareaId: string) {
@@ -239,8 +266,10 @@ export function eliminarTareaListaYLocalStorage(tareaId: string) {
         tareaPadre.remove();
         eliminarTareaLocalStorage(tareaId);
 
-        // También elimina la fecha de vencimiento del Local Storage y del documento
+        // Elimina la fecha de vencimiento del Local Storage
         eliminarFechaVencimientoLocalStorage(tareaId);
+
+
     }
 }
 

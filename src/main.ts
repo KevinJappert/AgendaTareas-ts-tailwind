@@ -4,6 +4,7 @@ import {
     restaurarEstadoCheckboxes,
     agregarTareaALista,
     agregarTarea,
+    obtenerFechaVencimientoDesdeLocalStorage
 
 } from "./Funciones/funciones";
 
@@ -17,12 +18,19 @@ export const listaTareaResultado = document.getElementById("lista-tarea");
 document.addEventListener('DOMContentLoaded', () => {
     const tareasGuardadas = cargarTareasDesdeLocalStorage();
     tareasGuardadas.forEach((tareaGuardada) => {
-        agregarTareaALista(tareaGuardada.texto, tareaGuardada.id, listaTareaResultado!);
+        // Obtener la fecha de vencimiento almacenada en el Local Storage
+        const fechaVencimientoString = obtenerFechaVencimientoDesdeLocalStorage(tareaGuardada.id);
+        const fechaVencimiento = fechaVencimientoString || undefined;
+        
+        agregarTareaALista(tareaGuardada.texto, tareaGuardada.id, listaTareaResultado!, fechaVencimiento);
     });
 
     // Restaurar el estado de los checkboxes cuando se carga la página
     restaurarEstadoCheckboxes();
 });
+
+
+
 
 // Agregar evento de clic al botón "Asignar"
 btnAsignar?.addEventListener('click', () => {
@@ -39,4 +47,4 @@ tareaInput?.addEventListener('keydown', (event) => {
 // Resto de tu código...
 
 console.log(localStorage);
-console.log(localStorage.getItem('tareas'));
+

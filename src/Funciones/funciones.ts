@@ -120,7 +120,6 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
     }
 }
 
-
 // Agregar evento de clic al botón "Asignar"
 export function agregarTarea() {
     if (tareaInput && !seRealizoEdicion && mensajeParrafo && listaTareaResultado) {

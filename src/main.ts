@@ -4,7 +4,8 @@ import {
     restaurarEstadoCheckboxes,
     agregarTareaALista,
     agregarTarea,
-    obtenerFechaVencimientoDesdeLocalStorage
+    obtenerFechaVencimientoDesdeLocalStorage,
+    fechaVencimientoInput,
 
 } from "./Funciones/funciones";
 
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Obtener la fecha de vencimiento almacenada en el Local Storage
         const fechaVencimientoString = obtenerFechaVencimientoDesdeLocalStorage(tareaGuardada.id);
         const fechaVencimiento = fechaVencimientoString || undefined;
-        
+
         agregarTareaALista(tareaGuardada.texto, tareaGuardada.id, listaTareaResultado!, fechaVencimiento);
     });
 
@@ -29,6 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
     restaurarEstadoCheckboxes();
 });
 
+// Agregar evento de tecla "Enter" para el campo de entrada de fecha de vencimiento
+fechaVencimientoInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+
+        // Si la fecha es válida, puedes agregar la tarea
+        agregarTarea();
+    }
+});
 
 
 
@@ -47,4 +56,6 @@ tareaInput?.addEventListener('keydown', (event) => {
 // Resto de tu código...
 
 console.log(localStorage);
+
+//Agregar mejores estilos a la hora de asignar la tarea. Agregar que la fecha de vencimiento sea una que sea a futuro y no sea en pasado.
 

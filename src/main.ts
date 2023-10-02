@@ -15,6 +15,7 @@ export const tareaInput = document.getElementById("tarea") as HTMLInputElement;
 export const listaTareaResultado = document.getElementById("lista-tarea");
 
 
+
 // Evento DOMContentLoaded para cargar tareas desde el LocalStorage
 document.addEventListener('DOMContentLoaded', () => {
     const tareasGuardadas = cargarTareasDesdeLocalStorage();
@@ -23,12 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const fechaVencimientoString = obtenerFechaVencimientoDesdeLocalStorage(tareaGuardada.id);
         const fechaVencimiento = fechaVencimientoString || undefined;
 
+        // Pasar la fecha de vencimiento adecuada al llamar a agregarTareaALista
         agregarTareaALista(tareaGuardada.texto, tareaGuardada.id, listaTareaResultado!, fechaVencimiento);
     });
 
     // Restaurar el estado de los checkboxes cuando se carga la página
     restaurarEstadoCheckboxes();
 });
+
 
 // Agregar evento de tecla "Enter" para el campo de entrada de fecha de vencimiento
 fechaVencimientoInput.addEventListener('keydown', (event) => {
@@ -52,6 +55,7 @@ tareaInput?.addEventListener('keydown', (event) => {
         agregarTarea();
     }
 });
+
 
 // Resto de tu código...
 

@@ -94,15 +94,29 @@ export function agregarTareaALista(tareaInput: string, tareaId: string, listaTar
 
         nuevaTarea.appendChild(tareaTexto);
 
-        // Mostrar la fecha de vencimiento en la tarea si existe
+        // Dentro de la función agregarTareaALista
         if (fechaVencimiento) {
             const fechaVencimientoElement = document.createElement('span');
-            fechaVencimientoElement.textContent = `Fecha de vencimiento: ${new Date(fechaVencimiento).toLocaleDateString()}`;
+            const fechaVencimientoDate = new Date(fechaVencimiento);
+
+            const mensajeFechaVencimiento = calcularDiferenciaDias(fechaVencimientoDate);
+
+            fechaVencimientoElement.textContent = `Vencimiento: ${fechaVencimientoDate.toLocaleDateString()} (${mensajeFechaVencimiento})`;
             nuevaTarea.appendChild(fechaVencimientoElement);
 
             // Guardar la fecha de vencimiento en el almacenamiento local
             guardarFechaVencimientoEnLocalStorage(tareaId, fechaVencimiento);
         }
+
+        // // Mostrar la fecha de vencimiento en la tarea si existe
+        // if (fechaVencimiento) {
+        //     const fechaVencimientoElement = document.createElement('span');
+        //     fechaVencimientoElement.textContent = `Fecha de vencimiento: ${new Date(fechaVencimiento).toLocaleDateString()}`;
+        //     nuevaTarea.appendChild(fechaVencimientoElement);
+
+        //     // Guardar la fecha de vencimiento en el almacenamiento local
+        //     guardarFechaVencimientoEnLocalStorage(tareaId, fechaVencimiento);
+        // }
 
         nuevaTarea.appendChild(accionesContainer);
         nuevaTarea.appendChild(inputEditar);
@@ -150,21 +164,36 @@ export function agregarTarea() {
                     texto: tareaValor,
                     fechaVencimiento: fechaVencimientoTexto.trim() !== "" ? new Date(fechaVencimientoTexto).toISOString() : undefined,
                 };
-            
+
                 // Convertir la fecha de vencimiento a cadena si no es undefined
                 const fechaVencimientoCadena = nuevaTarea.fechaVencimiento ? nuevaTarea.fechaVencimiento : undefined;
-            
+
                 agregarTareaALista(tareaValor, nuevaTarea.id, listaTareaResultado, fechaVencimientoCadena);
                 actualizarSeRealizoEdicion(false);
                 tareaInput.value = "";
                 fechaVencimientoInput.value = "";
-            
+
                 // Llamar a guardarTareaLocalStorage con el objeto Tarea
                 guardarTareaLocalStorage(nuevaTarea);
             }
         }
     }
 };
+
+
+function calcularDiferenciaDias(fechaVencimiento: Date): string {
+    const fechaActual = new Date();
+    const diferenciaMs = fechaVencimiento.getTime() - fechaActual.getTime();
+    const diferenciaDias = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24)); // Calcula la diferencia en días
+    if (diferenciaDias === 0) {
+        return "Hoy termina la fecha de vencimiento.";
+    } else if (diferenciaDias > 0) {
+        return `Faltan ${diferenciaDias} días para la fecha de vencimiento.`;
+    } else {
+        return "Esta fecha ya pasó.";
+    }
+}
+
 
 // Función para eliminar la fecha de vencimiento de una tarea en el almacenamiento local
 export function eliminarFechaVencimientoLocalStorage(tareaId: string) {
